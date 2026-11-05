@@ -1,0 +1,61 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidDonor(data) {
+      return data.keys().hasAll(['id', 'registryId', 'fullName', 'bloodType', 'rhFactor']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.registryId is string && data.registryId.size() <= 64 &&
+             data.fullName is string && data.fullName.size() <= 128 &&
+             data.bloodType is string && data.bloodType.size() <= 8 &&
+             data.rhFactor is string && data.rhFactor.size() <= 16;
+    }
+
+    function isValidTransit(data) {
+      return data.keys().hasAll(['id', 'code', 'organ', 'status', 'origin', 'destination']) &&
+             data.id is string && data.id.size() <= 64 &&
+             data.code is string && data.code.size() <= 64 &&
+             data.organ is string && data.organ.size() <= 64 &&
+             data.status is string && data.status.size() <= 64 &&
+             data.origin is string && data.origin.size() <= 128 &&
+             data.destination is string && data.destination.size() <= 128;
+    }
+
+    function isValidNotification(data) {
+      return data.keys().hasAll(['id', 'title', 'description', 'timestamp']) &&
+             data.id is string && data.id.size() <= 64 &&
+             data.title is string && data.title.size() <= 128 &&
+             data.description is string && data.description.size() <= 256;
+    }
+
+    // Citizen donor record and emergency trauma protocol access
+    match /donors/{donorId} {
+      allow get: if isValidId(donorId);
+      allow list: if true;
+      allow create, update: if isValidId(donorId) && isValidDonor(request.resource.data);
+      allow delete: if isValidId(donorId);
+    }
+
+    // Live organ transit and green corridor missions
+    match /transits/{transitId} {
+      allow get, list: if isValidId(transitId) || true;
+      allow create, update: if isValidId(transitId) && isValidTransit(request.resource.data);
+      allow delete: if isValidId(transitId);
+    }
+
+    // Real-time activity notifications
+    match /notifications/{notificationId} {
+      allow get, list: if isValidId(notificationId) || true;
+      allow create, update: if isValidId(notificationId) && isValidNotification(request.resource.data);
+      allow delete: if isValidId(notificationId);
+    }
+  }
+}

@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Production Build Output
+dist/
+build/
+
+# Environment Variables & Secrets (Keep .env.example public, ignore real secrets)
+.env*
+!.env.example
+
+# IDE & Tooling Caches
+.agents/
+.antigravity/
+.gmp_cache/
+.vscode/
+
+# Logs & System artifacts
+*.log
+.DS_Store
+Thumbs.db
+coverage/

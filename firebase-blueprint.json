@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "DonorProfile": {
+      "title": "DonorProfile",
+      "description": "Verified organ donor registry profile and medical directives",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "registryId": { "type": "string", "maxLength": 64 },
+        "fullName": { "type": "string", "maxLength": 128 },
+        "preferredName": { "type": "string", "maxLength": 128 },
+        "bloodType": { "type": "string", "maxLength": 8 },
+        "rhFactor": { "type": "string", "maxLength": 16 },
+        "avatarUrl": { "type": "string", "maxLength": 500 },
+        "dateOfBirth": { "type": "string", "maxLength": 32 },
+        "registeredDate": { "type": "string", "maxLength": 32 },
+        "lastVerifiedDate": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "maxLength": 32 },
+        "nationalRegistry": { "type": "string", "maxLength": 200 },
+        "hospitalAffiliation": { "type": "string", "maxLength": 200 },
+        "medicalNotes": { "type": "string", "maxLength": 1000 },
+        "allowResearch": { "type": "boolean" },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "registryId", "fullName", "bloodType", "rhFactor"]
+    },
+    "TransitMission": {
+      "title": "TransitMission",
+      "description": "Live organ transport mission, vehicle dispatch, and cold-chain perfusion telemetry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "code": { "type": "string", "maxLength": 64 },
+        "organ": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "maxLength": 64 },
+        "origin": { "type": "string", "maxLength": 128 },
+        "destination": { "type": "string", "maxLength": 128 },
+        "eta": { "type": "string", "maxLength": 32 },
+        "temp": { "type": "string", "maxLength": 32 },
+        "urgency": { "type": "string", "maxLength": 32 },
+        "speed": { "type": "string", "maxLength": 32 },
+        "donorRegistryId": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "code", "organ", "status", "origin", "destination"]
+    },
+    "ActivityNotification": {
+      "title": "ActivityNotification",
+      "description": "Real-time system notification and donor registry lifecycle event",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 128 },
+        "description": { "type": "string", "maxLength": 256 },
+        "timestamp": { "type": "string", "maxLength": 64 },
+        "type": { "type": "string", "maxLength": 32 },
+        "read": { "type": "boolean" }
+      },
+      "required": ["id", "title", "description", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/donors/{donorId}": {
+      "schema": "DonorProfile",
+      "description": "Active donor medical record and organ gift directives"
+    },
+    "/transits/{transitId}": {
+      "schema": "TransitMission",
+      "description": "Live hospital organ transit and green corridor convoy"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "ActivityNotification",
+      "description": "Registry events, verification badges, and transit alerts"
+    }
+  }
+}
